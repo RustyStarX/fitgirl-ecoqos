@@ -36,7 +36,4 @@ wmi = "0.17.1"
 # Windows version detection
 windows-version = "0.1.4"
 
-windows = { version = "0.61.1", features = [
-    "Win32_System_Threading",
-], default-features = false }
-windows-result = "0.3.2"
+win32-ecoqos = { workspace = true }

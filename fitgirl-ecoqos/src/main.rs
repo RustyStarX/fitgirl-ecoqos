@@ -3,10 +3,10 @@ use fitgirl_ecoqos::{
     Error,
     config::Config,
     listen::{Process, listen_process_creation},
-    throttle::toggle_efficiency_mode,
 };
 use tracing::{error, info, level_filters::LevelFilter, warn};
 use tracing_subscriber::EnvFilter;
+use win32_ecoqos::toggle_efficiency_mode;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -36,7 +36,7 @@ async fn main() -> Result<(), Error> {
         }
 
         info!("found process: {process_id}, name: {name}, throtting...");
-        if let Err(e) = toggle_efficiency_mode(process_id, true) {
+        if let Err(e) = unsafe { toggle_efficiency_mode(process_id, true) } {
             error!("failed to throttle {process_id}: {e}");
         }
     })

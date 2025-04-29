@@ -1,6 +1,9 @@
 [workspace]
 resolver = "3"
-members = ["fitgirl-ecoqos"]
+members = ["fitgirl-ecoqos", "win32-ecoqos"]
+
+[workspace.dependencies]
+win32-ecoqos = { path = "./win32-ecoqos" }
 
 [profile.release]
 panic = "abort"
