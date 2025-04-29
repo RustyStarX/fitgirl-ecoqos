@@ -1,0 +1,22 @@
+[package]
+name = "fitgirl-ecoqos"
+version = "0.1.0"
+edition = "2024"
+authors = ["mokurin000"]
+
+[dependencies]
+directories = "6.0.0"
+futures-lite = "2.6.0"
+serde = { version = "1.0.219", features = ["derive"] }
+thiserror = "2.0.12"
+tokio = { version = "1.44.2", features = ["rt-multi-thread", "macros"] }
+toml = "0.8.22"
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = [
+    "ansi",
+    "env-filter",
+    "fmt",
+    "local-time",
+], default-features = false }
+windows-version = "0.1.4"
+wmi = "0.17.1"
