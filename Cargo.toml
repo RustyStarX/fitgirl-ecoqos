@@ -23,3 +23,10 @@ windows = { version = "0.61.1", features = ["Win32_System_Threading"] }
 windows-result = "0.3.2"
 windows-version = "0.1.4"
 wmi = "0.17.1"
+
+[profile.release]
+panic = "abort"
+strip = true
+codegen-units = 1
+opt-level = "z"
+lto = true
