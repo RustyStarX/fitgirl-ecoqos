@@ -2,6 +2,9 @@
 name = "win32-ecoqos"
 version = "0.1.0"
 edition = "2024"
+authors = ["mokurin000"]
+description = "EcoQoS throttle for Windows 21H2 or newer"
+license = "MIT"
 
 [dependencies]
 windows = { version = "0.61.1", features = [

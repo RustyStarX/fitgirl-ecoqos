@@ -3,6 +3,8 @@ name = "fitgirl-ecoqos"
 version = "0.1.0"
 edition = "2024"
 authors = ["mokurin000"]
+description = "Automatically throttle EcoQoS, by process name blacklist."
+license = "MIT"
 
 [dependencies]
 # Default directories
