@@ -1,0 +1,42 @@
+[package]
+name = "fitgirl-ecoqos"
+version = "0.1.0"
+edition = "2024"
+authors = ["mokurin000"]
+
+[dependencies]
+# Default directories
+directories = "6.0.0"
+# Hashset
+ahash = "0.8.11"
+
+# async infra
+futures-lite = "2.6.0"
+tokio = { version = "1.44.2", features = ["rt-multi-thread", "macros"] }
+
+# serialization
+serde = { version = "1.0.219", features = ["derive"] }
+toml = "0.8.22"
+
+# custom error
+thiserror = "2.0.12"
+
+# logging
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = [
+    "ansi",
+    "env-filter",
+    "fmt",
+    "local-time",
+], default-features = false }
+
+# WMI querying
+wmi = "0.17.1"
+
+# Windows version detection
+windows-version = "0.1.4"
+
+windows = { version = "0.61.1", features = [
+    "Win32_System_Threading",
+], default-features = false }
+windows-result = "0.3.2"
