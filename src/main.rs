@@ -31,11 +31,13 @@ async fn main() -> Result<(), Error> {
     let blacklist: AHashSet<String> = blacklist.into_iter().collect();
 
     listen_process_creation(move |Process { process_id, name }| {
-        if blacklist.contains(&name) {
-            info!("found process: {process_id}, name: {name}, throtting...");
-            if let Err(e) = toggle_efficiency_mode(process_id, true) {
-                error!("failed to throttle {process_id}: {e}");
-            }
+        if !blacklist.contains(&name) {
+            return;
+        }
+
+        info!("found process: {process_id}, name: {name}, throtting...");
+        if let Err(e) = toggle_efficiency_mode(process_id, true) {
+            error!("failed to throttle {process_id}: {e}");
         }
     })
     .await?;
