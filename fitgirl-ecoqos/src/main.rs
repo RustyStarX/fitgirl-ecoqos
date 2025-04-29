@@ -6,7 +6,7 @@ use fitgirl_ecoqos::{
 };
 use tracing::{error, info, level_filters::LevelFilter, warn};
 use tracing_subscriber::EnvFilter;
-use win32_ecoqos::toggle_efficiency_mode;
+use win32_ecoqos::process::toggle_efficiency_mode;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
