@@ -16,12 +16,12 @@ struct NewProcessEvent {
 #[derive(Deserialize, Debug)]
 #[serde(rename = "Win32_Process")]
 #[serde(rename_all = "PascalCase")]
-struct Process {
-    process_id: u32,
-    name: String,
+pub struct Process {
+    pub process_id: u32,
+    pub name: String,
 }
 
-pub async fn listen_process_creation() -> Result<(), Error> {
+pub async fn listen_process_creation(mut callback: impl FnMut(Process)) -> Result<(), Error> {
     let com_con = COMLibrary::new()?;
     let wmi_con = WMIConnection::new(com_con)?;
 
@@ -33,9 +33,7 @@ pub async fn listen_process_creation() -> Result<(), Error> {
 
     while let Some(result) = stream.next().await {
         let process = result?.target_instance;
-        println!("---------");
-        println!("PID:        {}", process.process_id);
-        println!("Name:       {}", process.name);
+        callback(process);
     }
 
     Ok(())

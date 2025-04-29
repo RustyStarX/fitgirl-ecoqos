@@ -1,5 +1,11 @@
-use fitgirl_ecoqos::{Error, config::Config, listen::listen_process_creation};
-use tracing::{info, level_filters::LevelFilter, warn};
+use ahash::AHashSet;
+use fitgirl_ecoqos::{
+    Error,
+    config::Config,
+    listen::{Process, listen_process_creation},
+    throttle::toggle_efficiency_mode,
+};
+use tracing::{error, info, level_filters::LevelFilter, warn};
 use tracing_subscriber::EnvFilter;
 
 #[tokio::main]
@@ -21,8 +27,18 @@ async fn main() -> Result<(), Error> {
 
     let config = Config::from_default_path()?;
     info!("startup with config: {config:?}");
+    let Config { blacklist } = config;
+    let blacklist: AHashSet<String> = blacklist.into_iter().collect();
 
-    listen_process_creation().await?;
+    listen_process_creation(move |Process { process_id, name }| {
+        if blacklist.contains(&name) {
+            info!("found process: {process_id}, name: {name}, throtting...");
+            if let Err(e) = toggle_efficiency_mode(process_id, true) {
+                error!("failed to throttle {process_id}: {e}");
+            }
+        }
+    })
+    .await?;
 
     Ok(())
 }

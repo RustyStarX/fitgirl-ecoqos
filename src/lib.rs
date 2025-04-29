@@ -5,6 +5,7 @@ use wmi::WMIError;
 
 pub mod config;
 pub mod listen;
+pub mod throttle;
 
 #[derive(Debug, Error)]
 pub enum Error {

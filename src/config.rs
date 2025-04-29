@@ -8,7 +8,7 @@ use crate::Error;
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Config {
-    blacklist: Vec<String>,
+    pub blacklist: Vec<String>,
 }
 
 impl Config {
@@ -38,10 +38,18 @@ impl Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            blacklist: vec!["xtool.exe", "cls-magic2_x64.exe"]
-                .into_iter()
-                .map(str::to_string)
-                .collect(),
+            blacklist: vec![
+                "cls-magic2_x64.exe",
+                "cls-magic2_x86.exe",
+                "cls-magic2l_x64.exe",
+                "cls-magic2l_x86.exe",
+                "oo2reck.exe",
+                "rz.exe",
+                "xtool.exe",
+            ]
+            .into_iter()
+            .map(str::to_string)
+            .collect(),
         }
     }
 }
