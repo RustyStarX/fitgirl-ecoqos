@@ -4,9 +4,10 @@ use crate::preset::{THREAD_THROTTLE, THREAD_UNTHROTTLE};
 use windows::Win32::{
     Foundation::{CloseHandle, HANDLE},
     System::Threading::{
-        OpenThread, SetThreadInformation, SetThreadPriority, THREAD_INFORMATION_CLASS,
-        THREAD_POWER_THROTTLING_STATE, THREAD_PRIORITY, THREAD_PRIORITY_IDLE,
-        THREAD_PRIORITY_NORMAL, THREAD_SET_INFORMATION, ThreadPowerThrottling,
+        GetThreadInformation, OpenThread, SetThreadInformation, SetThreadPriority,
+        ThreadPowerThrottling, THREAD_INFORMATION_CLASS, THREAD_POWER_THROTTLING_CURRENT_VERSION,
+        THREAD_POWER_THROTTLING_EXECUTION_SPEED, THREAD_POWER_THROTTLING_STATE, THREAD_PRIORITY,
+        THREAD_PRIORITY_IDLE, THREAD_PRIORITY_NORMAL, THREAD_SET_INFORMATION,
     },
 };
 
@@ -47,7 +48,7 @@ pub unsafe fn toggle_efficiency_mode(
     let result = unsafe { toggle_efficiency_mode_handle(hthread, enable) };
     let close_handle = unsafe { CloseHandle(hthread) };
 
-    close_handle.or(result)
+    result.or(close_handle)
 }
 
 /// Toggle efficiency mode of a thread, by a [`HANDLE`](https://microsoft.github.io/windows-docs-rs/doc/windows/Win32/Foundation/struct.HANDLE.html).
@@ -91,4 +92,30 @@ pub unsafe fn toggle_efficiency_mode_handle(
             npriority,
         )
     }
+}
+
+/// check whether EcoQoS is enabled on a thread.
+///
+/// `hprocess` must have `THREAD_QUERY_INFORMATION` access right.
+///
+/// SAFETY: see [`toggle_efficiency_mode_handle`]
+pub unsafe fn ecoqos_enabled(hthread: HANDLE) -> Result<bool, windows_result::Error> {
+    let mut thread_info = THREAD_POWER_THROTTLING_STATE {
+        Version: THREAD_POWER_THROTTLING_CURRENT_VERSION,
+        ..Default::default()
+    };
+
+    unsafe {
+        GetThreadInformation(
+            hthread,
+            ThreadPowerThrottling,
+            &mut thread_info as *mut _ as *mut _,
+            size_of::<THREAD_POWER_THROTTLING_STATE>() as u32,
+        )?;
+    }
+
+    Ok(
+        thread_info.StateMask & THREAD_POWER_THROTTLING_EXECUTION_SPEED
+            == THREAD_POWER_THROTTLING_EXECUTION_SPEED,
+    )
 }

@@ -4,9 +4,11 @@ use crate::preset::{PROCESS_THROTTLE, PROCESS_UNTHROTTLE};
 use windows::Win32::{
     Foundation::{CloseHandle, HANDLE},
     System::Threading::{
-        IDLE_PRIORITY_CLASS, NORMAL_PRIORITY_CLASS, OpenProcess, PROCESS_CREATION_FLAGS,
-        PROCESS_INFORMATION_CLASS, PROCESS_POWER_THROTTLING_STATE, PROCESS_SET_INFORMATION,
-        ProcessPowerThrottling, SetPriorityClass, SetProcessInformation,
+        GetProcessInformation, OpenProcess, ProcessPowerThrottling, SetPriorityClass,
+        SetProcessInformation, IDLE_PRIORITY_CLASS, NORMAL_PRIORITY_CLASS, PROCESS_CREATION_FLAGS,
+        PROCESS_INFORMATION_CLASS, PROCESS_POWER_THROTTLING_CURRENT_VERSION,
+        PROCESS_POWER_THROTTLING_EXECUTION_SPEED, PROCESS_POWER_THROTTLING_STATE,
+        PROCESS_SET_INFORMATION,
     },
 };
 
@@ -38,7 +40,7 @@ pub unsafe fn toggle_efficiency_mode(pid: u32, enable: bool) -> Result<(), windo
     let result = unsafe { toggle_efficiency_mode_handle(hprocess, enable) };
     let close_handle = unsafe { CloseHandle(hprocess) };
 
-    close_handle.or(result)
+    result.or(close_handle)
 }
 
 /// Toggle efficiency mode of a process, by a [`HANDLE`](https://microsoft.github.io/windows-docs-rs/doc/windows/Win32/Foundation/struct.HANDLE.html).
@@ -82,4 +84,31 @@ pub unsafe fn toggle_efficiency_mode_handle(
             dwpriorityclass,
         )
     }
+}
+
+/// check whether EcoQoS is enabled on a process.
+///
+/// `hprocess` must have `PROCESS_QUERY_INFORMATION` access right.
+///
+/// SAFETY: see [`toggle_efficiency_mode_handle`]
+pub unsafe fn ecoqos_enabled(hprocess: HANDLE) -> Result<bool, windows_result::Error> {
+    let mut process_info = PROCESS_POWER_THROTTLING_STATE {
+        Version: PROCESS_POWER_THROTTLING_CURRENT_VERSION,
+        ControlMask: 0,
+        StateMask: 0,
+    };
+
+    unsafe {
+        GetProcessInformation(
+            hprocess,
+            ProcessPowerThrottling,
+            &mut process_info as *mut _ as *mut _,
+            size_of::<PROCESS_POWER_THROTTLING_STATE>() as u32,
+        )?;
+    }
+
+    Ok(
+        process_info.StateMask & PROCESS_POWER_THROTTLING_EXECUTION_SPEED
+            == PROCESS_POWER_THROTTLING_EXECUTION_SPEED,
+    )
 }
