@@ -896,8 +896,11 @@ dependencies = [
 name = "win32-ecoqos"
 version = "0.2.3"
 dependencies = [
+ "serde",
+ "tokio",
  "windows",
  "windows-result",
+ "wmi",
 ]
 
 [[package]]

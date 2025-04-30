@@ -7,3 +7,7 @@ pub(crate) mod preset;
 pub mod process;
 /// Threading related EcoQoS toggle functions.
 pub mod thread;
+
+#[cfg(feature = "find_thread")]
+/// Find thread by it's name
+pub mod utils;

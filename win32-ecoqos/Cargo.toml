@@ -6,11 +6,21 @@ authors = ["mokurin000"]
 description = "EcoQoS throttle for Windows 21H2 or newer"
 license = "MIT"
 
+[features]
+find_thread = ["dep:wmi", "dep:serde"]
+
 [dependencies]
 windows = { version = "0.61.1", features = [
     "Win32_System_Threading",
 ], default-features = false }
 windows-result = "0.3.2"
+
+# to find threads by name
+wmi = { version = "0.17.1", optional = true }
+serde = { version = "1.0.219", features = ["derive"], optional = true }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt"], default-features = false }
 
 [package.metadata.docs.rs]
 targets = [
@@ -18,3 +28,7 @@ targets = [
     "i686-pc-windows-msvc",
     "aarch64-pc-windows-msvc",
 ]
+
+[[test]]
+name = "find_thread"
+required-features = ["find_thread"]
