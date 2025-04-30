@@ -1,6 +1,6 @@
 [package]
 name = "win32-ecoqos"
-version = "0.2.5-1"
+version = "0.2.6"
 edition = "2021"
 authors = ["mokurin000"]
 description = "EcoQoS throttle for Windows 21H2 or newer"
