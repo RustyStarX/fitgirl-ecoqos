@@ -8,6 +8,7 @@ license = "MIT"
 
 [features]
 find_thread = ["dep:wmi", "dep:serde"]
+nightly = []
 
 [dependencies]
 windows = { version = "0.61.1", features = [

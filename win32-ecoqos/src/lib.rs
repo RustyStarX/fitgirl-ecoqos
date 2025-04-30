@@ -1,3 +1,5 @@
+#![cfg_attr(feature = "nightly", feature(doc_cfg))]
+
 pub use windows;
 pub use windows_result;
 
@@ -9,6 +11,6 @@ pub mod process;
 pub mod thread;
 
 /// Find thread by it's name
-#[cfg_attr(docsrs, doc(cfg(feature = "find_thread")))]
+#[cfg_attr(feature = "nightly", doc(cfg(feature = "find_thread")))]
 #[cfg(feature = "find_thread")]
 pub mod utils;
