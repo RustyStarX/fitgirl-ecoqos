@@ -1,7 +1,7 @@
 [package]
 name = "win32-ecoqos"
-version = "0.1.0"
-edition = "2024"
+version = "0.2.0"
+edition = "2021"
 authors = ["mokurin000"]
 description = "EcoQoS throttle for Windows 21H2 or newer"
 license = "MIT"
