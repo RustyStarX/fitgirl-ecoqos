@@ -11,3 +11,10 @@ windows = { version = "0.61.1", features = [
     "Win32_System_Threading",
 ], default-features = false }
 windows-result = "0.3.2"
+
+[package.metadata.docs.rs]
+targets = [
+    "x86_64-pc-windows-msvc",
+    "i686-pc-windows-msvc",
+    "aarch64-pc-windows-msvc",
+]
