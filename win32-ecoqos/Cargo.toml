@@ -1,6 +1,6 @@
 [package]
 name = "win32-ecoqos"
-version = "0.2.5"
+version = "0.2.5-1"
 edition = "2021"
 authors = ["mokurin000"]
 description = "EcoQoS throttle for Windows 21H2 or newer"
@@ -28,6 +28,8 @@ targets = [
     "i686-pc-windows-msvc",
     "aarch64-pc-windows-msvc",
 ]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
 
 [[test]]
 name = "find_thread"
