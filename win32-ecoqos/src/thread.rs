@@ -35,15 +35,7 @@ unsafe fn toggle_efficiency_mode_impl(
 ///
 /// WARN: [`Thread::id()`](https://doc.rust-lang.org/std/thread/struct.Thread.html#method.id)
 /// is entirely unrelated to underlying thread ID.
-///
-/// SAFETY: you must not call failable Win32 APIs in other threads,
-///
-/// or it may override [`GetLastError`](https://learn.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-getlasterror),
-/// thus, you will get wrong [`Error`](windows_result::Error).
-pub unsafe fn toggle_efficiency_mode(
-    thread_id: u32,
-    enable: bool,
-) -> Result<(), windows_result::Error> {
+pub fn toggle_efficiency_mode(thread_id: u32, enable: bool) -> Result<(), windows_result::Error> {
     let hthread = unsafe { OpenThread(THREAD_SET_INFORMATION, false, thread_id)? };
     let result = unsafe { toggle_efficiency_mode_handle(hthread, enable) };
     let close_handle = unsafe { CloseHandle(hthread) };
@@ -59,10 +51,7 @@ pub unsafe fn toggle_efficiency_mode(
 /// You must enable [`THREAD_SET_INFORMATION`](https://microsoft.github.io/windows-docs-rs/doc/windows/Win32/System/Threading/constant.THREAD_SET_INFORMATION.html)
 /// access flag on the handle to apply EcoQoS throttle.
 ///
-/// SAFETY: you must not call failable Win32 APIs in other threads,
-///
-/// or it may override [`GetLastError`](https://learn.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-getlasterror),
-/// thus, you will get wrong [`Error`](windows_result::Error).
+/// SAFETY: `hthread` must be a valid process handle. DO NOT pass null ptr, e.g.
 pub unsafe fn toggle_efficiency_mode_handle(
     hthread: HANDLE,
     enable: bool,
@@ -98,7 +87,7 @@ pub unsafe fn toggle_efficiency_mode_handle(
 ///
 /// `hprocess` must have `THREAD_QUERY_INFORMATION` access right.
 ///
-/// SAFETY: see [`toggle_efficiency_mode_handle`]
+/// SAFETY: `hthread` must be a valid process handle. DO NOT pass null ptr, e.g.
 pub unsafe fn ecoqos_enabled(hthread: HANDLE) -> Result<bool, windows_result::Error> {
     let mut thread_info = THREAD_POWER_THROTTLING_STATE {
         Version: THREAD_POWER_THROTTLING_CURRENT_VERSION,

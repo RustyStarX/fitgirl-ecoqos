@@ -36,7 +36,7 @@ async fn main() -> Result<(), Error> {
         }
 
         info!("found process: {process_id}, name: {name}, throtting...");
-        if let Err(e) = unsafe { toggle_efficiency_mode(process_id, true) } {
+        if let Err(e) = toggle_efficiency_mode(process_id, true) {
             error!("failed to throttle {process_id}: {e}");
         }
     })

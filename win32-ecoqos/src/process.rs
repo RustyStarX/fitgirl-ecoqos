@@ -33,9 +33,7 @@ unsafe fn toggle_efficiency_mode_impl(
 }
 
 /// Toggle efficiency mode of a process, by it's PID.
-///
-/// SAFETY: see [`toggle_efficiency_mode_handle`]
-pub unsafe fn toggle_efficiency_mode(pid: u32, enable: bool) -> Result<(), windows_result::Error> {
+pub fn toggle_efficiency_mode(pid: u32, enable: bool) -> Result<(), windows_result::Error> {
     let hprocess = unsafe { OpenProcess(PROCESS_SET_INFORMATION, false, pid)? };
     let result = unsafe { toggle_efficiency_mode_handle(hprocess, enable) };
     let close_handle = unsafe { CloseHandle(hprocess) };
@@ -51,10 +49,7 @@ pub unsafe fn toggle_efficiency_mode(pid: u32, enable: bool) -> Result<(), windo
 /// You must enable [`PROCESS_SET_INFORMATION`](https://microsoft.github.io/windows-docs-rs/doc/windows/Win32/System/Threading/constant.PROCESS_SET_INFORMATION.html)
 /// access flag on your handle to apply EcoQoS throttle.
 ///
-/// SAFETY: you must not call failable Win32 APIs in other threads,
-///
-/// or it may override [`GetLastError`](https://learn.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-getlasterror),
-/// thus, you will get wrong [`Error`](windows_result::Error).
+/// SAFETY: `hprocess` must be a valid process handle. DO NOT pass null ptr, e.g.
 pub unsafe fn toggle_efficiency_mode_handle(
     hprocess: HANDLE,
     enable: bool,
@@ -90,7 +85,7 @@ pub unsafe fn toggle_efficiency_mode_handle(
 ///
 /// `hprocess` must have `PROCESS_QUERY_INFORMATION` access right.
 ///
-/// SAFETY: see [`toggle_efficiency_mode_handle`]
+/// SAFETY: `hprocess` must be a valid process handle. DO NOT pass null ptr, e.g.
 pub unsafe fn ecoqos_enabled(hprocess: HANDLE) -> Result<bool, windows_result::Error> {
     let mut process_info = PROCESS_POWER_THROTTLING_STATE {
         Version: PROCESS_POWER_THROTTLING_CURRENT_VERSION,
