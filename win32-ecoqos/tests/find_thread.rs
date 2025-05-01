@@ -35,7 +35,7 @@ async fn async_find_thread_by_name() -> Result<(), wmi::WMIError> {
     let conn = Threads::try_new()?;
     let (tx, rx) = channel();
     let _ = std::thread::Builder::new()
-        .name("mythread".to_owned())
+        .name("myasyncthread".to_owned())
         .spawn(move || {
             let tid = unsafe { GetCurrentThreadId() };
             let _ = tx.send(tid);
@@ -44,13 +44,15 @@ async fn async_find_thread_by_name() -> Result<(), wmi::WMIError> {
             }
         });
     let thread_id = rx.recv().expect("failed to retrieve thread id");
-    let threads = conn.async_find_thread_by_name("mythread", false).await?;
+    let threads = conn
+        .async_find_thread_by_name("myasyncthread", false)
+        .await?;
 
     assert_eq!(
         threads.collect::<Vec<_>>(),
         vec![Thread {
             thread_id,
-            thread_name: "mythread".into()
+            thread_name: "myasyncthread".into()
         }]
     );
 
