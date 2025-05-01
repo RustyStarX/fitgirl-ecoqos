@@ -8,6 +8,7 @@ repository = "https://github.com/mokurin000/fitgirl-ecoqos"
 license = "MIT"
 
 [features]
+default = ["find_thread"]
 find_thread = ["dep:wmi", "dep:serde"]
 nightly = []
 

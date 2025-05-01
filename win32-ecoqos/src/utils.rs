@@ -14,10 +14,12 @@ struct Win32Thread {
     handle: String,
 }
 
-/// Thread continer
+/// Information from a win32 thread
 #[derive(Debug, PartialEq, Eq, Deserialize, Serialize)]
 pub struct Thread {
+    /// win32 thread_id
     pub thread_id: u32,
+    /// win32 thread description
     pub thread_name: String,
 }
 
@@ -27,6 +29,7 @@ pub struct Threads {
 }
 
 impl Threads {
+    /// try to make WMI connection
     pub fn try_new() -> Result<Self, wmi::WMIError> {
         let com_con = COMLibrary::new()?;
         let wmi_con = WMIConnection::new(com_con)?;
@@ -34,11 +37,38 @@ impl Threads {
         Ok(Self { wmi: wmi_con })
     }
 
-    pub fn find_thread_by_name(
+    /// find a thread by it's name
+    ///
+    /// - `full_match`: set to false for contains check, otherwise PartialEq
+    ///
+    /// ```rust
+    /// use win32_ecoqos::utils::Threads;
+    /// use std::time::Duration;
+    ///
+    /// let _ = std::thread::Builder::new()
+    ///     .name("mythread".into())
+    ///     .spawn(|| loop {
+    ///         std::thread::sleep(Duration::from_secs(60));
+    ///     });
+    ///
+    /// let threads = Threads::try_new().expect("failed to make wmi connection");
+    ///
+    /// assert!(threads
+    ///     .find_thread_by_name("mythread", true)
+    ///     .expect("failed to find thread")
+    ///     .next()
+    ///     .is_some());
+    /// assert!(threads
+    ///     .find_thread_by_name("my-thread", true)
+    ///     .expect("failed to find thread")
+    ///     .next()
+    ///     .is_none());
+    /// ```
+    pub fn find_thread_by_name<'a>(
         &self,
-        name: impl AsRef<str>,
+        name: &'a str,
         full_match: bool,
-    ) -> Result<Vec<Thread>, wmi::WMIError> {
+    ) -> Result<impl Iterator<Item = Thread> + 'a, wmi::WMIError> {
         let pid = std::process::id();
 
         let mut filter = HashMap::new();
@@ -48,11 +78,14 @@ impl Threads {
         Ok(filter_threads(threads, full_match, name.as_ref()))
     }
 
-    pub async fn async_find_thread_by_name(
+    /// find a thread by it's name, async version
+    ///
+    /// - `full_match`: set to false for contains check, otherwise PartialEq
+    pub async fn async_find_thread_by_name<'a>(
         &self,
-        name: impl AsRef<str>,
+        name: &'a str,
         full_match: bool,
-    ) -> Result<Vec<Thread>, wmi::WMIError> {
+    ) -> Result<impl Iterator<Item = Thread> + 'a, wmi::WMIError> {
         let pid = std::process::id();
 
         let mut filter = HashMap::new();
@@ -66,10 +99,14 @@ impl Threads {
     }
 }
 
-fn filter_threads(threads: Vec<Win32Thread>, full_match: bool, name: &str) -> Vec<Thread> {
+fn filter_threads<'a>(
+    threads: Vec<Win32Thread>,
+    full_match: bool,
+    name: &'a str,
+) -> impl Iterator<Item = Thread> + 'a {
     threads
         .into_iter()
-        .filter_map(|Win32Thread { handle }| unsafe {
+        .filter_map(move |Win32Thread { handle }| unsafe {
             let thread_id = handle.trim_matches('\"').parse().ok()?;
             let hthread = OpenThread(THREAD_QUERY_LIMITED_INFORMATION, false, thread_id).ok()?;
             let description = GetThreadDescription(hthread);
@@ -85,5 +122,4 @@ fn filter_threads(threads: Vec<Win32Thread>, full_match: bool, name: &str) -> Ve
                 None
             }
         })
-        .collect()
 }

@@ -33,6 +33,17 @@ unsafe fn toggle_efficiency_mode_impl(
 }
 
 /// Toggle efficiency mode of a process, by it's PID.
+///
+/// ```rust
+/// use win32_ecoqos::process::toggle_efficiency_mode;
+///
+/// let pid = std::process::id();
+///
+/// // Enable EcoQoS
+/// toggle_efficiency_mode(pid, true);
+/// // Enable HighQoS
+/// toggle_efficiency_mode(pid, false);
+/// ```
 pub fn toggle_efficiency_mode(pid: u32, enable: bool) -> Result<(), windows_result::Error> {
     let hprocess = unsafe { OpenProcess(PROCESS_SET_INFORMATION, false, pid)? };
     let result = unsafe { toggle_efficiency_mode_handle(hprocess, enable) };
@@ -50,6 +61,24 @@ pub fn toggle_efficiency_mode(pid: u32, enable: bool) -> Result<(), windows_resu
 /// access flag on your handle to apply EcoQoS throttle.
 ///
 /// SAFETY: `hprocess` must be a valid process handle. DO NOT pass null ptr, e.g.
+///
+/// ```rust
+/// use win32_ecoqos::process::toggle_efficiency_mode_handle;
+/// use windows::Win32::Foundation::CloseHandle;
+/// use windows::Win32::System::Threading::GetCurrentProcess;
+///
+/// unsafe {
+///     let hprocess = GetCurrentProcess();
+///
+///     // Enable EcoQos
+///     toggle_efficiency_mode_handle(hprocess, true);
+///     // Enable HighQos
+///     toggle_efficiency_mode_handle(hprocess, false);
+///
+///     // Avoid resource leak
+///     CloseHandle(hprocess);
+/// }
+/// ```
 pub unsafe fn toggle_efficiency_mode_handle(
     hprocess: HANDLE,
     enable: bool,

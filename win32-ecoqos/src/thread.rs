@@ -35,6 +35,9 @@ unsafe fn toggle_efficiency_mode_impl(
 ///
 /// WARN: [`Thread::id()`](https://doc.rust-lang.org/std/thread/struct.Thread.html#method.id)
 /// is entirely unrelated to underlying thread ID.
+/// 
+/// To receive win32 thread id with ease,
+/// see [retrieve_thread.rs](https://github.com/mokurin000/fitgirl-ecoqos/blob/master/win32-ecoqos/examples/retrieve_thread.rs)
 pub fn toggle_efficiency_mode(thread_id: u32, enable: bool) -> Result<(), windows_result::Error> {
     let hthread = unsafe { OpenThread(THREAD_SET_INFORMATION, false, thread_id)? };
     let result = unsafe { toggle_efficiency_mode_handle(hthread, enable) };

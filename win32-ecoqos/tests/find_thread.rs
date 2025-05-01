@@ -20,7 +20,7 @@ fn find_thread_by_name() -> Result<(), wmi::WMIError> {
     let threads = conn.find_thread_by_name("mythread", false)?;
 
     assert_eq!(
-        threads,
+        threads.collect::<Vec<_>>(),
         vec![Thread {
             thread_id,
             thread_name: "mythread".into()
@@ -47,7 +47,7 @@ async fn async_find_thread_by_name() -> Result<(), wmi::WMIError> {
     let threads = conn.async_find_thread_by_name("mythread", false).await?;
 
     assert_eq!(
-        threads,
+        threads.collect::<Vec<_>>(),
         vec![Thread {
             thread_id,
             thread_name: "mythread".into()
