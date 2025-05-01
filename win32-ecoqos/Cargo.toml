@@ -8,8 +8,11 @@ repository = "https://github.com/mokurin000/fitgirl-ecoqos"
 license = "MIT"
 
 [features]
-default = ["find_thread"]
-find_thread = ["dep:wmi", "dep:serde"]
+default = ["find_thread", "find_process"]
+find_thread = ["wmi"]
+find_process = ["windows/Win32_System_ProcessStatus"]
+
+wmi = ["dep:wmi", "dep:serde"]
 nightly = []
 
 [dependencies]
