@@ -19,7 +19,7 @@ async fn main() -> Result<(), Error> {
         .init();
 
     let os_version = windows_version::OsVersion::current().build;
-    assert!(os_version >= 22000, "EcoQoS not supported!");
+    assert!(os_version >= 21359, "EcoQoS not supported!");
 
     if os_version < 22621 {
         warn!("you may not get the best result before Windows 11 22H2!");
