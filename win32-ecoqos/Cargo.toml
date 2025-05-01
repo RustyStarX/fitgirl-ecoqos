@@ -40,3 +40,7 @@ rustdoc-args = ["--cfg", "docsrs"]
 [[test]]
 name = "find_thread"
 required-features = ["find_thread"]
+
+[[test]]
+name = "list_process"
+required-features = ["find_process"]
