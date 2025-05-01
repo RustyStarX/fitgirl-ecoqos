@@ -27,6 +27,11 @@ jobs:
           target: ${{ matrix.target }}
           args: "--locked --release"
           strip: true
+      - uses: Swatinem/rust-cache@v2
+        with:
+          # The prefix cache key, this can be changed to start a new cache manually.
+          # default: "v0-rust"
+          prefix-key: ${{ matrix.target }}
       - name: Prepare assets
         shell: bash
         run: |
