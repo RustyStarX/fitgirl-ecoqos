@@ -46,6 +46,8 @@ impl Default for Config {
                 "oo2reck.exe",
                 "rz.exe",
                 "xtool.exe",
+                "fsb.exe",
+                "setup.tmp",
             ]
             .into_iter()
             .map(str::to_string)
