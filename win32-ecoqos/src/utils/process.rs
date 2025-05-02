@@ -13,7 +13,8 @@ pub fn get_process_name(
     process_id: u32,
     name_max_len: Option<u32>,
 ) -> windows_result::Result<OsString> {
-    let mut process_name = Vec::with_capacity(name_max_len.unwrap_or(1024) as usize);
+    let max_len = name_max_len.unwrap_or(1024) as usize;
+    let mut process_name = Vec::with_capacity(max_len);
 
     unsafe {
         let hprocess = OpenProcess(
@@ -21,7 +22,7 @@ pub fn get_process_name(
             false,
             process_id,
         )?;
-        process_name.set_len(1024);
+        process_name.set_len(max_len);
 
         let new_len = GetModuleBaseNameW(hprocess, None, process_name.as_mut_slice());
         process_name.set_len(new_len as usize);
