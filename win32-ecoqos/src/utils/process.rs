@@ -16,9 +16,11 @@ pub struct Process {
     pub process_id: u32,
     /// win32 process id of it's parent
     pub process_parent_id: u32,
+    /// win32 process name, null bytes trimmed.
     pub process_name: OsString,
 }
 
+/// snapshot of processes
 #[derive(Debug)]
 pub struct Processes {
     snapshot: HANDLE,
@@ -32,6 +34,7 @@ impl Drop for Processes {
 }
 
 impl Processes {
+    /// try to capture a snapshot of processes.
     pub fn try_new() -> windows_result::Result<Self> {
         let snapshot = unsafe { CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0) }?;
         Ok(Self {

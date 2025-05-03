@@ -16,7 +16,9 @@ use windows::Win32::{
 #[derive(Debug, PartialEq, Eq)]
 /// process information from snapshot.
 pub struct Thread {
+    /// win32 thread id
     pub thread_id: u32,
+    /// owner win32 process id of this thread
     pub owner_process_id: u32,
 }
 
