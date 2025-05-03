@@ -1,10 +1,9 @@
 #[cfg_attr(feature = "nightly", doc(cfg(feature = "find_thread")))]
 #[cfg(feature = "find_thread")]
-mod wmi;
-
+mod thread;
 #[cfg_attr(feature = "nightly", doc(cfg(feature = "find_thread")))]
 #[cfg(feature = "find_thread")]
-pub use wmi::{Thread, Threads};
+pub use thread::*;
 
 #[cfg_attr(feature = "nightly", doc(cfg(feature = "find_process")))]
 #[cfg(feature = "find_process")]

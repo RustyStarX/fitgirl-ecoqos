@@ -8,6 +8,7 @@ use windows::Win32::{
     },
 };
 
+#[derive(Debug, PartialEq, Eq)]
 #[non_exhaustive]
 /// process information from snapshot.
 pub struct Process {
@@ -16,6 +17,7 @@ pub struct Process {
     pub process_name: OsString,
 }
 
+#[derive(Debug)]
 pub struct Processes {
     snapshot: HANDLE,
     last_entry: Option<PROCESSENTRY32W>,
