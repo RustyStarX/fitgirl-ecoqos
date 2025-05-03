@@ -10,7 +10,7 @@ license = "MIT"
 [features]
 default = ["find_thread", "find_process"]
 find_thread = ["wmi"]
-find_process = ["windows/Win32_System_ProcessStatus"]
+find_process = ["windows/Win32_System_Diagnostics_ToolHelp"]
 
 wmi = ["dep:wmi", "dep:serde"]
 nightly = []

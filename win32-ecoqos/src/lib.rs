@@ -10,7 +10,7 @@ pub mod process;
 /// Threading related EcoQoS toggle functions.
 pub mod thread;
 
-/// Find thread by it's name.
+/// Helper functions to deal with processes/threads.
 ///
 /// For a full example to open thread after obtained Win32 ThreadID,
 /// see [retrieve_thread.rs](https://github.com/mokurin000/fitgirl-ecoqos/blob/master/win32-ecoqos/examples/retrieve_thread.rs)
