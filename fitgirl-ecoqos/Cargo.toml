@@ -39,3 +39,10 @@ wmi = "0.17.1"
 windows-version = "0.1.4"
 
 win32-ecoqos = { workspace = true }
+
+# regex matching
+regex = { version = "1.11.1", features = ["perf-dfa-full"], optional = true }
+
+[features]
+default = ["regex"]
+regex = ["dep:regex"]

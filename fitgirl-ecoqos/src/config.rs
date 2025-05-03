@@ -9,6 +9,8 @@ use crate::Error;
 #[serde(default)]
 pub struct Config {
     pub blacklist: Vec<String>,
+    #[cfg(feature = "regex")]
+    pub blacklist_regex: Vec<String>,
 }
 
 impl Config {
@@ -53,6 +55,11 @@ impl Default for Config {
             .into_iter()
             .map(str::to_string)
             .collect(),
+            #[cfg(feature = "regex")]
+            blacklist_regex: vec![r#"re-.*\.exe"#]
+                .into_iter()
+                .map(str::to_string)
+                .collect(),
         }
     }
 }

@@ -170,6 +170,7 @@ dependencies = [
  "ahash",
  "directories",
  "futures-lite",
+ "regex",
  "serde",
  "thiserror",
  "tokio",

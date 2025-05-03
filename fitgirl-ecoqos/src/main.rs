@@ -8,6 +8,9 @@ use tracing::{error, info, level_filters::LevelFilter, warn};
 use tracing_subscriber::EnvFilter;
 use win32_ecoqos::process::toggle_efficiency_mode;
 
+#[cfg(feature = "regex")]
+use regex::RegexSet;
+
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     tracing_subscriber::FmtSubscriber::builder()
@@ -27,11 +30,22 @@ async fn main() -> Result<(), Error> {
 
     let config = Config::from_default_path()?;
     info!("startup with config: {config:?}");
-    let Config { blacklist } = config;
+    let Config {
+        blacklist,
+        #[cfg(feature = "regex")]
+        blacklist_regex,
+    } = config;
     let blacklist: AHashSet<String> = blacklist.into_iter().collect();
+    #[cfg(feature = "regex")]
+    let regexset = RegexSet::new(blacklist_regex)?;
 
     listen_process_creation(move |Process { process_id, name }| {
         if !blacklist.contains(&name) {
+            return;
+        }
+
+        #[cfg(feature = "regex")]
+        if !regexset.is_match(&name) {
             return;
         }
 

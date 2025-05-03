@@ -16,4 +16,7 @@ pub enum Error {
     Toml(#[from] toml::de::Error),
     #[error("WMI: {0}")]
     WMI(#[from] WMIError),
+    #[cfg(feature = "regex")]
+    #[error("invalid regex: {0}")]
+    Regex(#[from] regex::Error),
 }
