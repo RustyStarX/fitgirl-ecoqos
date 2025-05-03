@@ -6,6 +6,8 @@ authors = ["mokurin000"]
 description = "EcoQoS throttle for Windows 21H2 or newer"
 repository = "https://github.com/mokurin000/fitgirl-ecoqos"
 license = "MIT"
+keywords = ["Windows", "EcoQoS"]
+categories = ["api-bindings", "os::windows-apis"]
 
 [features]
 default = ["find_thread", "find_process"]
