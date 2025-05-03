@@ -19,7 +19,7 @@ fn find_thread_by_name_snap() -> windows_result::Result<()> {
     let snapshot = Threads::try_new()?;
     let thread_id = rx.recv().expect("failed to retrieve thread id");
     let thread_name = OsString::from("mythread-snap");
-    let threads = snapshot.find_thread_by_name(&thread_name);
+    let threads = snapshot.find_thread_by_name(&thread_name, true);
 
     assert_eq!(
         threads.collect::<Vec<_>>(),

@@ -20,6 +20,26 @@ pub struct Thread {
     pub owner_process_id: u32,
 }
 
+/// Snapshot of win32 threads.
+///
+/// ```rust
+/// use std::ffi::OsString;
+/// use win32_ecoqos::utils::Threads;
+///
+/// let _ = std::thread::Builder::new()
+///     .name("hello".into())
+///     .spawn(|| loop {
+///         std::thread::sleep(std::time::Duration::from_secs(60));
+///     });
+///
+/// let snapshot = Threads::try_new().unwrap();
+/// assert!(
+///     snapshot
+///         .find_thread_by_name(&OsString::from("hello"), true)
+///         .next()
+///         .is_some()
+/// );
+/// ```
 #[derive(Debug)]
 pub struct Threads {
     snapshot: HANDLE,
@@ -44,6 +64,7 @@ impl Thread {
 }
 
 impl Threads {
+    /// create a new snapshop to find threads
     pub fn try_new() -> windows_result::Result<Self> {
         let snapshot = unsafe { CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, std::process::id()) }?;
         Ok(Self {
@@ -52,13 +73,24 @@ impl Threads {
         })
     }
 
+    /// find a thread of current process, by it's name
     pub fn find_thread_by_name<'a>(
         self,
         thread_name: &'a OsStr,
+        full_match: bool,
     ) -> impl Iterator<Item = Thread> + 'a {
         let process_id = std::process::id();
         self.filter(move |t| t.owner_process_id == process_id)
-            .filter(|t| t.get_name().as_deref() == Ok(thread_name))
+            .filter(move |t| {
+                t.get_name().is_ok_and(|name| {
+                    if full_match {
+                        &name == thread_name
+                    } else {
+                        name.to_string_lossy()
+                            .contains(thread_name.to_string_lossy().as_ref())
+                    }
+                })
+            })
     }
 }
 
