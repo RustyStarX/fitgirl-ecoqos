@@ -48,6 +48,7 @@ impl Default for Config {
                 "xtool.exe",
                 "fsb.exe",
                 "setup.tmp",
+                "oggre_dec.exe",
             ]
             .into_iter()
             .map(str::to_string)
