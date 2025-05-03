@@ -12,7 +12,9 @@ use windows::Win32::{
 #[non_exhaustive]
 /// process information from snapshot.
 pub struct Process {
+    /// win32 process id
     pub process_id: u32,
+    /// win32 process id of it's parent
     pub process_parent_id: u32,
     pub process_name: OsString,
 }
@@ -66,10 +68,17 @@ impl Iterator for Processes {
                  szExeFile,
                  ..
              }| {
+                let null = szExeFile
+                    .iter()
+                    .enumerate()
+                    .find_map(|(idx, ch)| if ch == &0 { Some(idx) } else { None })
+                    .unwrap_or(szExeFile.len());
+
+                let process_name = OsString::from_wide(&szExeFile[..null]);
                 Process {
                     process_id: th32ProcessID,
                     process_parent_id: th32ParentProcessID,
-                    process_name: OsString::from_wide(&szExeFile),
+                    process_name,
                 }
             },
         )
