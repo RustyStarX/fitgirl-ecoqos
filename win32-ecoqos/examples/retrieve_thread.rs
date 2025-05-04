@@ -28,9 +28,9 @@ fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
             thread_id,
         )?;
 
-        toggle_efficiency_mode_handle(hthread, true)?;
+        toggle_efficiency_mode_handle(hthread, Some(true))?;
         assert!(ecoqos_enabled(hthread)?);
-        toggle_efficiency_mode_handle(hthread, false)?;
+        toggle_efficiency_mode_handle(hthread, Some(false))?;
         assert!(!ecoqos_enabled(hthread)?);
 
         CloseHandle(hthread)?;

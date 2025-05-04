@@ -10,6 +10,10 @@ Windows 11 21H2 (build: 22000) or newer required.
 
 Windows 10 Insider Preview Build 21359 may work, but not guranteed.
 
+## Efficiency mode
+
+Efficiency mode = EcoQoS + idle priority.
+
 ## Documentation
 
 ### Local generation

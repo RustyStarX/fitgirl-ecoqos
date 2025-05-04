@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::preset::{PROCESS_THROTTLE, PROCESS_UNTHROTTLE};
+use crate::preset::{PROCESS_RESTORE, PROCESS_THROTTLE, PROCESS_UNTHROTTLE};
 use windows::Win32::{
     Foundation::{CloseHandle, HANDLE},
     System::Threading::{
@@ -40,16 +40,18 @@ unsafe fn toggle_efficiency_mode_impl(
 /// let pid = std::process::id();
 ///
 /// // Enable EcoQoS
-/// toggle_efficiency_mode(pid, true);
+/// toggle_efficiency_mode(pid, Some(true));
 /// // Enable HighQoS
-/// toggle_efficiency_mode(pid, false);
+/// toggle_efficiency_mode(pid, Some(false));
+/// // Let system decide
+/// toggle_efficiency_mode(pid, None);
 /// ```
-pub fn toggle_efficiency_mode(pid: u32, enable: bool) -> Result<(), windows_result::Error> {
+pub fn toggle_efficiency_mode(pid: u32, enable: Option<bool>) -> Result<(), windows_result::Error> {
     let hprocess = unsafe { OpenProcess(PROCESS_SET_INFORMATION, false, pid)? };
     let result = unsafe { toggle_efficiency_mode_handle(hprocess, enable) };
-    let close_handle = unsafe { CloseHandle(hprocess) };
+    let _ = unsafe { CloseHandle(hprocess) };
 
-    result.or(close_handle)
+    result
 }
 
 /// Toggle efficiency mode of a process, by a [`HANDLE`](https://microsoft.github.io/windows-docs-rs/doc/windows/Win32/Foundation/struct.HANDLE.html).
@@ -71,9 +73,11 @@ pub fn toggle_efficiency_mode(pid: u32, enable: bool) -> Result<(), windows_resu
 ///     let hprocess = GetCurrentProcess();
 ///
 ///     // Enable EcoQos
-///     toggle_efficiency_mode_handle(hprocess, true);
+///     toggle_efficiency_mode_handle(hprocess, Some(true));
 ///     // Enable HighQos
-///     toggle_efficiency_mode_handle(hprocess, false);
+///     toggle_efficiency_mode_handle(hprocess, Some(false));
+///     // Let system decide
+///     toggle_efficiency_mode_handle(hprocess, None);
 ///
 ///     // Avoid resource leak
 ///     CloseHandle(hprocess);
@@ -81,19 +85,19 @@ pub fn toggle_efficiency_mode(pid: u32, enable: bool) -> Result<(), windows_resu
 /// ```
 pub unsafe fn toggle_efficiency_mode_handle(
     hprocess: HANDLE,
-    enable: bool,
+    enable: Option<bool>,
 ) -> Result<(), windows_result::Error> {
-    let new_state = if enable {
-        PROCESS_THROTTLE
-    } else {
-        PROCESS_UNTHROTTLE
+    let new_state = match enable {
+        Some(true) => PROCESS_THROTTLE,
+        Some(false) => PROCESS_UNTHROTTLE,
+        None => PROCESS_RESTORE,
     };
 
     let processinformationclass = ProcessPowerThrottling;
     let processinformation = &new_state as *const _ as *const c_void;
     let processinformationsize = size_of::<PROCESS_POWER_THROTTLING_STATE>() as u32;
 
-    let dwpriorityclass = if enable {
+    let dwpriorityclass = if let Some(true) = enable {
         IDLE_PRIORITY_CLASS
     } else {
         NORMAL_PRIORITY_CLASS
