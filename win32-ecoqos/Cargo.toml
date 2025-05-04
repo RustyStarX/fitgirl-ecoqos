@@ -22,6 +22,9 @@ windows = { version = "0.61.1", features = [
 ], default-features = false }
 windows-result = "0.3.2"
 
+[dev-dependencies]
+oneshot = "0.1.11"
+
 [package.metadata.docs.rs]
 targets = [
     "x86_64-pc-windows-msvc",
