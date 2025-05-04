@@ -12,8 +12,7 @@ directories = "6.0.0"
 # Hashset
 ahash = "0.8.11"
 
-# async infra
-futures-lite = "2.6.0"
+# async runtime
 tokio = { version = "1.44.2", features = ["rt-multi-thread", "macros"] }
 
 # serialization
@@ -39,6 +38,7 @@ wmi = "0.17.1"
 windows-version = "0.1.4"
 
 win32-ecoqos = { workspace = true }
+listen-new-proc = { workspace = true }
 
 # regex matching
 regex = { version = "1.11.1", features = ["perf-dfa-full"], optional = true }

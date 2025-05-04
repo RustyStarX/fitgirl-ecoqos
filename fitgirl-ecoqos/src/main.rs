@@ -1,9 +1,6 @@
 use ahash::AHashSet;
-use fitgirl_ecoqos::{
-    Error,
-    config::Config,
-    listen::{Process, listen_process_creation},
-};
+use fitgirl_ecoqos::{Error, config::Config};
+use listen_new_proc::{Process, listen_process_creation};
 use tracing::{error, info, level_filters::LevelFilter, warn};
 use tracing_subscriber::EnvFilter;
 use win32_ecoqos::process::toggle_efficiency_mode;

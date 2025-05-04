@@ -1,9 +1,10 @@
 [workspace]
 resolver = "3"
-members = ["fitgirl-ecoqos", "win32-ecoqos"]
+members = ["fitgirl-ecoqos", "win32-ecoqos", "listen-new-proc"]
 
 [workspace.dependencies]
 win32-ecoqos = { path = "./win32-ecoqos" }
+listen-new-proc = { path = "./listen-new-proc" }
 
 [profile.release]
 panic = "abort"
