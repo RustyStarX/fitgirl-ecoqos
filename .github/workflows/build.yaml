@@ -21,17 +21,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+        with:
+          # The prefix cache key, this can be changed to start a new cache manually.
+          # default: "v0-rust"
+          prefix-key: ${{ matrix.target }}
+          shared-key: main
       - name: Build binary
         uses: houseabsolute/actions-rust-cross@v0
         with:
           target: ${{ matrix.target }}
           args: "--locked --release"
           strip: true
-      - uses: Swatinem/rust-cache@v2
-        with:
-          # The prefix cache key, this can be changed to start a new cache manually.
-          # default: "v0-rust"
-          prefix-key: ${{ matrix.target }}
       - name: Prepare assets
         shell: bash
         run: |
