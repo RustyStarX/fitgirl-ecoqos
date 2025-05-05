@@ -3,19 +3,25 @@ use fitgirl_ecoqos::{Error, config::Config};
 use listen_new_proc::{Process, listen_process_creation};
 use tracing::{error, info, level_filters::LevelFilter, warn};
 use tracing_subscriber::EnvFilter;
-use win32_ecoqos::process::toggle_efficiency_mode;
+use win32_ecoqos::{process::toggle_efficiency_mode, utils::Processes};
 
 #[cfg(feature = "regex")]
 use regex::RegexSet;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
+    let my_pid = std::process::id();
+    let in_cmd = Processes::try_new()?
+        .find(|p| p.process_parent_id == my_pid)
+        .is_some_and(|p| p.process_name == "conhost.exe");
+
     tracing_subscriber::FmtSubscriber::builder()
         .with_env_filter(
             EnvFilter::builder()
                 .with_default_directive(LevelFilter::INFO.into())
                 .from_env_lossy(),
         )
+        .with_ansi(!in_cmd)
         .init();
 
     let os_version = windows_version::OsVersion::current().build;

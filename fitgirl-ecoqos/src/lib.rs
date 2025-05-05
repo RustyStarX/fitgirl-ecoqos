@@ -1,4 +1,5 @@
 use thiserror::Error;
+use win32_ecoqos::windows_result;
 
 #[derive(Debug, Error)]
 pub enum Error {
@@ -10,6 +11,8 @@ pub enum Error {
     IOError(#[from] std::io::Error),
     #[error("Listen Error: {0}")]
     Listen(#[from] listen_new_proc::Error),
+    #[error("Win32 error: {0}")]
+    Win32(#[from] windows_result::Error),
 
     #[cfg(feature = "regex")]
     #[error("invalid regex: {0}")]
