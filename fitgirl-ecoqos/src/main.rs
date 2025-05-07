@@ -42,21 +42,25 @@ async fn main() -> Result<(), Error> {
     #[cfg(feature = "regex")]
     let regexset = RegexSet::new(blacklist_regex)?;
 
-    listen_process_creation(move |Process { process_id, name }| {
-        if !blacklist.contains(&name) {
-            return;
-        }
+    listen_process_creation(
+        move |Process {
+                  process_id, name, ..
+              }| {
+            if !blacklist.contains(&name) {
+                return;
+            }
 
-        #[cfg(feature = "regex")]
-        if !regexset.is_match(&name) {
-            return;
-        }
+            #[cfg(feature = "regex")]
+            if !regexset.is_match(&name) {
+                return;
+            }
 
-        info!("found process: {process_id}, name: {name}, throtting...");
-        if let Err(e) = toggle_efficiency_mode(process_id, Some(true)) {
-            error!("failed to throttle {process_id}: {e}");
-        }
-    })
+            info!("found process: {process_id}, name: {name}, throtting...");
+            if let Err(e) = toggle_efficiency_mode(process_id, Some(true)) {
+                error!("failed to throttle {process_id}: {e}");
+            }
+        },
+    )
     .await?;
 
     Ok(())

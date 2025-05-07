@@ -13,11 +13,13 @@ struct NewProcessEvent {
     target_instance: Process,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Default)]
 #[serde(rename = "Win32_Process")]
 #[serde(rename_all = "PascalCase")]
+#[non_exhaustive]
 pub struct Process {
     pub process_id: u32,
+    pub parent_process_id: u32,
     pub name: String,
 }
 
